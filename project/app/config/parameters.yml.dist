@@ -1,0 +1,12 @@
+parameters:
+    # DB
+    database_host:     127.0.0.1
+    database_name:     project_demo_dev
+    database_user:     project_demo
+    database_password: project_demo
+
+    # Test DB
+    database_host_test: 127.0.0.1
+    database_name_test: project_demo_dev_test
+    database_user_test: project_demo
+    database_password_test: project_demo

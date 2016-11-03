@@ -1,0 +1,25 @@
+twig:
+    form_themes:
+        - 'SonataCoreBundle:Form:datepicker.html.twig'
+
+sonata_block:
+    default_contexts: [cms]
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+        sonata.admin.block.search_result:
+            contexts:   [admin]
+
+sonata_admin:
+    title: Admin
+    templates:
+        ajax: "SonataAdminBundle::ajax_layout.html.twig"
+        user_block: "CiklumSonataUserBundle:Templates:user_block.html.twig"
+    dashboard:
+        blocks:
+            - { position: left, type: sonata.admin.block.admin_list }
+        groups:
+            project_app.admin.cocktail:
+                label: Default
+                items:
+                    - project_app.admin.cocktail_admin

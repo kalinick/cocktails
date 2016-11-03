@@ -1,0 +1,11 @@
+Project\AppBundle\Entity\Cocktail:
+    properties:
+        type:
+            - NotBlank: ~
+
+Project\AppBundle\Entity\CocktailTranslation:
+    properties:
+        title:
+            - NotBlank: ~
+        description:
+            - NotBlank: ~

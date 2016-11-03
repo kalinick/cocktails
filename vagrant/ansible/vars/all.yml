@@ -1,0 +1,58 @@
+---
+server:
+    install: '1'
+    timezone: UTC
+    locale: en_US.UTF-8
+    hostname: 'project_demo.vagrant'
+    packages:
+        - curl
+        - wget
+        - python-software-properties
+        - mc
+        - htop
+        - git
+nginx:
+    install: '1'
+    docroot: '/var/www/project/web'
+    index: 'app_dev.php'
+    servername: 'impartsocial.vagrant'
+    additional_params: 'fastcgi_param SYMFONY__KERNEL__CACHE_DIR "/tmp/project/cache";fastcgi_param SYMFONY__KERNEL__LOGS_DIR "/tmp/project/logs";'
+apache:
+    install: '0'
+    docroot: '/var/www/project/web'
+    servername: 'project_demo.vagrant'
+mysql:
+    install: '1'
+    root_password: ''
+    database: project_dev
+    user: project
+    password: project
+    dump:
+    packages:
+        - mysql-server
+        - mysql-client
+        - python-mysqldb
+php:
+    install: '1'
+    repo: ppa:ondrej/php
+    packages: [php7.0-dev, php7.0-cli, php7.0-intl, php7.0-mcrypt, php7.0-curl, php7.0-gd, php7.0-imap, php7.0-mysql]
+xdebug:
+    install: '1'
+    version: '2.4.0rc3'
+    dest: '2.4.0RC3'
+composer:
+    install: '1'
+symfony:
+    tmp: /tmp/project
+    projectroot: /var/www/project
+    cacheclear: 1
+    assetsdump: 1
+    assetsinstall: 1
+    migrations: 1
+    moveparams: 1
+    composerinstall: 1
+    console_dest: bin/console
+    parameter_file: parameters.yml.vagrant.dist
+    env:
+        cache: 'SYMFONY__KERNEL__CACHE_DIR="/tmp/project/cache"'
+        logs: 'SYMFONY__KERNEL__LOGS_DIR="/tmp/project/logs"'

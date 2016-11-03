@@ -1,0 +1,17 @@
+rsync.exclude
+var/cache**
+var/logs**
+var/sessions**
+web/upload_test**
+web/upload*
+web/bundles*
+web/js**
+web/css**
+.git**
+.gitignore
+composer.json
+composer.lock
+composer.phar
+deploy.tar
+bin/doctrine*
+bin/security*

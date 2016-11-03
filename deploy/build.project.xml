@@ -1,0 +1,139 @@
+<project name="project" default="build:basic:project">
+    <!--  Dev  -->
+    <property name="deploy.dev.host" value="172.28.27.130"/>
+    <property name="deploy.dev.user" value="jenkins"/>
+    <property name="deploy.dev.port" value="22"/>
+    <property name="deploy.dev.pubkeyfile" value="/var/lib/jenkins/.ssh/id_rsa.pub" />
+    <property name="deploy.dev.privkeyfile" value="/var/lib/jenkins/.ssh/id_rsa" />
+    <property name="deploy.dev.tmppath" value="/tmp/project_dev"/>
+    <property name="deploy.dev.path" value="/var/www/dev"/>
+    <property name="deploy.dev.parameters" value="parameters.yml.dev.dist"/>
+
+    <!--  Stage  -->
+    <property name="deploy.stage.host" value="172.28.27.130"/>
+    <property name="deploy.stage.user" value="jenkins"/>
+    <property name="deploy.stage.port" value="22"/>
+    <property name="deploy.stage.pubkeyfile" value="/var/lib/jenkins/.ssh/id_rsa.pub" />
+    <property name="deploy.stage.privkeyfile" value="/var/lib/jenkins/.ssh/id_rsa" />
+    <property name="deploy.stage.tmppath" value="/tmp/project_stage"/>
+    <property name="deploy.stage.path" value="/var/www/stage"/>
+    <property name="deploy.stage.parameters" value="parameters.yml.stage.dist"/>
+
+    <!--  Release  -->
+    <property name="deploy.release.host" value="172.28.27.130"/>
+    <property name="deploy.release.user" value="jenkins"/>
+    <property name="deploy.release.port" value="22"/>
+    <property name="deploy.release.pubkeyfile" value="/var/lib/jenkins/.ssh/id_rsa.pub" />
+    <property name="deploy.release.privkeyfile" value="/var/lib/jenkins/.ssh/id_rsa" />
+    <property name="deploy.release.tmppath" value="/tmp/project_release"/>
+    <property name="deploy.release.path" value="/var/www/release"/>
+    <property name="deploy.release.parameters" value="parameters.yml.release.dist"/>
+
+    <!-- Directories -->
+    <property name="dir.project" value="${project.basedir}/project"/>
+    <property name="dir.deploy" value="${project.basedir}/deploy"/>
+    <property name="dir.src" value="${dir.project}/src"/>
+    <property name="dir.config" value="${dir.project}/app/config"/>
+    <property name="dir.cache" value="${dir.project}/var/cache"/>
+    <property name="dir.logs" value="${dir.project}/var/logs"/>
+    <property name="dir.sessions" value="${dir.project}/var/sessions"/>
+    <property name="file.sf.console" value="${dir.project}/bin/console"/>
+    <property name="file.phpunit.config" value="${dir.project}/app/phpunit.xml"/>
+
+    <!-- Code style standard -->
+    <property name="codestandard" value="Symfony2"/>
+
+    <!--  What should be deployed  -->
+    <fileset id="deploy" dir="${dir.project}">
+        <include name="**"/>
+        <exclude name="build/**"/>
+        <exclude name="var/cache/**"/>
+        <exclude name="var/logs/**"/>
+        <exclude name="var/sessions/**"/>
+        <exclude name=".git**"/>
+    </fileset>
+
+    <!-- Source code fileset for different checks -->
+    <fileset id="sourcecode" dir="${dir.src}">
+        <include name="**/*.php" />
+        <exclude name="**/DataFixtures/**"/>
+        <exclude name="**/*Test.php"/>
+        <exclude name="**/*TestCase.php"/>
+        <exclude name="**/*Stub.php"/>
+    </fileset>
+
+    <!--  First target before deploy  -->
+    <target name="build:basic:project" description="First target before build...">
+        <echo msg="Some works before archive project..."/>
+        <delete dir="${dir.cache}" verbose="false"/>
+        <delete dir="${dir.logs}" verbose="false"/>
+        <delete dir="${dir.sessions}" verbose="false"/>
+        <delete dir="${dir.sessions}" verbose="false"/>
+        <delete dir="${dir.project}_test" verbose="false"/>
+        <delete dir="${dir.project}/web/upload_test" verbose="false"/>
+        <delete dir="${dir.project}/web/bundles" verbose="false"/>
+        <delete dir="${dir.project}/web/js" verbose="false"/>
+        <delete dir="${dir.project}/web/css" verbose="false"/>
+        <exec command="cp ${dir.deploy}/rsync.exclude ${dir.project}/rsync.exclude" />
+    </target>
+
+    <target name="analyzer:phpunit:prepare" description="Prepare before unit tests.">
+        <echo msg="Prepare unit tests ..."/>
+        <delete dir="${dir.cache}" verbose="false"/>
+        <delete dir="${dir.sessions}" verbose="false"/>
+        <delete dir="${dir.logs}" verbose="false"/>
+        <delete dir="${dir.project}/web/upload_test" verbose="false"/>
+        <mkdir dir="${dir.cache}" />
+        <mkdir dir="${dir.logs}" />
+        <mkdir dir="${dir.sessions}" />
+        <mkdir dir="${dir.project}/web/upload_test"/>
+        <exec passthru="true" command="php ${file.sf.console} doctrine:database:drop --no-interaction --force --env=test --no-debug"/>
+        <exec passthru="true" command="php ${file.sf.console} doctrine:database:create --no-interaction --env=test --no-debug"/>
+        <exec passthru="true" command="php ${file.sf.console} doctrine:migrations:migrate --no-interaction --env=test --no-debug"/>
+        <exec passthru="true" command="php ${file.sf.console} ciklum:frameworktest:fixturesloadtruncate --env=test --no-debug"/>
+    </target>
+
+    <!--  Finnaly target after build  -->
+    <target name="deploy:basic:project" description="Finally target after build...">
+        <echo msg="Cleaning project cache ..."/>
+        <ssh username="${deploy.user}"
+             pubkeyfile="${deploy.pubkeyfile}"
+             privkeyfile="${deploy.privkeyfile}"
+             host="${deploy.host}"
+             port="${deploy.port}"
+             command="
+                echo '${deploy.path}';
+
+                sudo mkdir -p ${deploy.path}/var/cache 2>&amp;1 >> /tmp/deploy.log;
+                sudo mkdir -p ${deploy.path}/var/logs 2>&amp;1  >> /tmp/deploy.log;
+                sudo mkdir -p ${deploy.path}/var/sessions 2>&amp;1  >> /tmp/deploy.log;
+                sudo mkdir -p ${deploy.path}/web/upload 2>&amp;1 >> /tmp/deploy.log;
+                sudo mkdir -p ${deploy.path}/web/upload/admin;
+                sudo mkdir -p ${deploy.path}/web/js;
+                sudo mkdir -p ${deploy.path}/web/css;
+                sudo mkdir -p ${deploy.path}/web/bundles;
+                sudo chown www-data:www-data -R ${deploy.path}/var ${deploy.path}/web 2>&amp;1  >> /tmp/deploy.log;
+                echo 'Uploaded file, Cache, Sessions and Logs dir created';
+
+                sudo -u www-data -H php ${deploy.path}/bin/console doctrine:migrations:migrate --no-interaction --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                echo 'Migrations migrated';
+
+                sudo -u www-data -H php ${deploy.path}/bin/console assets:install ${deploy.path}/web --symlink --env=prod;
+                sudo -u www-data -H php ${deploy.path}/bin/console assetic:dump --env=prod;
+                echo 'Assets installed and assetic dumped';
+
+                sudo -u www-data -H rm -rf ${deploy.path}/var/cache/prod/doctrine/cache/*;
+                sudo -u www-data -H php ${deploy.path}/bin/console cache:clear --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                echo 'Cache cleared';
+
+                sudo -u www-data -H php ${deploy.path}/bin/console doctrine:cache:clear-collection-region --all --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                sudo -u www-data -H php ${deploy.path}/bin/console doctrine:cache:clear-entity-region --all --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                sudo -u www-data -H php ${deploy.path}/bin/console doctrine:cache:clear-metadata --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                sudo -u www-data -H php ${deploy.path}/bin/console doctrine:cache:clear-query    --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                sudo -u www-data -H php ${deploy.path}/bin/console doctrine:cache:clear-result   --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                sudo -u www-data -H php ${deploy.path}/bin/console doctrine:cache:delete file_system --all --env=prod 2>&amp;1  >> /tmp/deploy.log;
+                echo 'Doctrine cache cleared';
+             "
+        />
+    </target>
+</project>

@@ -1,0 +1,25 @@
+monolog:
+    handlers:
+        main:
+            type:         fingers_crossed
+            action_level: error
+            handler:      grouped
+        grouped:
+            type:    group
+            members: [streamed, buffered]
+        streamed:
+            type:  stream
+            path:  "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+        buffered:
+            type:    buffer
+            handler: swift_mailer
+        swift_mailer:
+            type:       swift_mailer
+            mailer:     swiftmailer.mailer.errors
+            from_email: "%notification.default_sender.email%"
+            to_email:   ["olsav@ciklum.com"]
+            subject:    An Error Occurred!
+            level:      critical
+        console:
+            type:  console

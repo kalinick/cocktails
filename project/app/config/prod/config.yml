@@ -1,0 +1,3 @@
+imports:
+    - { resource: ../_base/config.yml }
+    - { resource: monolog.yml }

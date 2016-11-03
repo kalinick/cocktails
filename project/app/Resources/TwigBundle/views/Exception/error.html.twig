@@ -1,0 +1,12 @@
+{% extends "::base.html.twig" %}
+
+{% block content %}
+    <section class="section -section-cart">
+        <div class="container">
+            <h1 class="title-section">Page not found</h1>
+
+            <div class="site-error">{{ status_code }}</div>
+            <span class="site-error--description">Oops, the page you are looking for does not exist.</span>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,47 @@
+imports:
+    - { resource: ../_base/config.yml }
+    - { resource: parameters.yml }
+
+framework:
+    test: ~
+    session:
+        name: "PHPSESSID_TEST"
+        storage_id: "session.storage.filesystem"
+    profiler:
+        collect: false
+
+swiftmailer:
+    disable_delivery: true
+    spool:
+        type: file
+        path: "%kernel.cache_dir%/swiftmailer/spool"
+
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                driver:   "pdo_mysql"
+                host:     "%database_host_test%"
+                port:     "%database_port_test%"
+                dbname:   "%database_name_test%"
+                user:     "%database_user_test%"
+                password: "%database_password_test%"
+                charset:  UTF8
+                server_version: 5.5
+
+security:
+    firewalls:
+        admin_secured:
+            http_basic: ~
+        user_secured:
+            http_basic: ~
+
+monolog:
+    handlers:
+        main:
+            type:   stream
+            path:   "%kernel.logs_dir%/%kernel.environment%.log"
+            level:  error
+            handler: null
+            buffer_size: 200

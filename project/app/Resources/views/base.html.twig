@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>{% block title %}{{ 'Project'|title }}{% endblock %}</title>
+
+    {% block includes %}
+        <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css">
+        {% stylesheets filter='cssrewrite'
+            'build/css/style.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="all" />
+        {% endstylesheets %}
+    {% endblock %}
+</head>
+<body class="wrapper">
+    <header class="header">
+        {% block header %}{% include '::base_header.html.twig' %}{% endblock %}
+    </header>
+
+    <div class="container content">
+        <div class="page-header row top-buffer hide">
+            <h1>{% block contentTitle %}{% endblock %}</h1>
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer text-center">
+        {% block footer %}{% include '::base_footer.html.twig' %}{% endblock %}
+    </footer>
+
+    {% block bottom_scripts %}
+        {% javascripts
+            'build/vendors/jquery-2.1.4.min.js'
+            'build/js/common.js'
+        %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+        {% endjavascripts %}
+    {% endblock %}
+</body>
+</html>

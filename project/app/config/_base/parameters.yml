@@ -1,0 +1,23 @@
+parameters:
+    # DB
+    database_driver:   pdo_mysql
+    database_port:
+    database_path:     null
+
+    # Test DB
+    database_port_test:
+
+    kernel.sessions_dir: '%kernel.root_dir%/../var/sessions/%kernel.environment%'
+
+    # Swiftmailer
+    mailer_transport: smtp
+    mailer_host: localhost
+    mailer_user: null
+    mailer_password: null
+
+    notification.default_sender.email: www-data@project_demo.pp.ciklum.com
+
+    locale: ru
+    locales:
+        - ru
+        - en

@@ -1,0 +1,13 @@
+parameters:
+    database_driver: pdo_mysql
+    database_host: 127.0.0.1
+    database_name: project_dev
+    database_user: project
+    database_password: project
+
+    database_host_test: 127.0.0.1
+    database_name_test: project_dev_test
+    database_user_test: project
+    database_password_test: project
+
+    kernel.sessions_dir: "/tmp/project/sessions/%kernel.environment%"

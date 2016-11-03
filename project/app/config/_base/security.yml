@@ -1,0 +1,42 @@
+security:
+    access_decision_manager:
+        strategy: unanimous
+        allow_if_all_abstain: true
+
+    role_hierarchy:
+        ROLE_USER:          ~
+        ROLE_PROJECT_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH, ROLE_SONATA_ADMIN, ROLE_SUPER_ADMIN]
+    providers:
+        users_provider:
+            entity:
+                class: Project\UserBundle\Entity\User\User
+                property: email
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+#        admin_secured:
+#            pattern: ^/admin
+#            anonymous: ~
+#            provider: admins_provider
+#            logout:
+#                path:   /admin/logout
+#                target: /admin/login
+#            form_login:
+#                require_previous_session: false
+#                login_path: /admin/login
+#                check_path: /admin/login_check
+#                default_target_path: /admin/dashboard
+#                always_use_default_target_path: true
+        user_secured:
+            pattern: ^/
+            anonymous: ~
+#    encoders:
+#        Ciklum\SonataUserBundle\Entity\Admin:
+#            algorithm: bcrypt
+#    access_control:
+#        - { path: ^/admin/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/admin/login_check, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/admin/forgot-password*, allow_if: "!has_role('IS_AUTHENTICATED_REMEMBERED')" }
+#        - { path: ^/admin/reset-password*, allow_if: "!has_role('IS_AUTHENTICATED_REMEMBERED')" }
+#        - { path: ^/admin, role: ROLE_PROJECT_ADMIN }

@@ -1,0 +1,176 @@
+<project name="${project.name}" basedir="." default="build:release">
+
+    <!--   Properties   -->
+    <property name="deploy.excludefile" value="rsync.exclude"/>
+    <property name="deploy.file" value="deploy.tar"/>
+
+    <!--   Project configuration   -->
+    <import file="deploy/build.project.xml"/>
+    <import file="deploy/build.analyzer.xml"/>
+
+    <!--   Main targets  -->
+    <target name="build:dev" depends="build:clean, build:basic:composer:dev, analyzer:run:without_coverage, build:basic:project, deploy:dev" description="Run all test and build everything on DEV server"/>
+    <target name="build:dev:coverage" depends="build:clean, build:basic:composer:dev, analyzer:run:with_coverage, build:basic:project, deploy:dev" description="Run all test with coverage and build everything on DEV server"/>
+    <target name="build:stage" depends="build:clean, build:basic:composer:stage, analyzer:run:without_coverage, build:basic:project, deploy:stage" description="Run all test and build on STAGE server"/>
+    <target name="build:release" depends="build:clean, build:basic:composer:release, build:basic:project, deploy:release" description="Build everything on RELEASE server"/>
+
+    <!--   Cleanup before build   -->
+    <target name="build:clean" description="Clean up build directories.">
+        <echo msg="Cleaning build directories ..."/>
+        <delete file="${deploy.file}" verbose="true"/>
+    </target>
+
+    <!--   General deploy   -->
+    <target name="deploy:basic" depends="deploy:basic:tar, deploy:basic:check, deploy:basic:scp, deploy:basic:run" description="General deployment. Deploy config should be set before use"/>
+
+    <!--  Run composer  -->
+    <target name="build:basic:composer" depends="build:basic:composer:download, build:basic:composer:install"
+            description="Run project composer..."/>
+    <target name="build:basic:composer:download" description="Downloading composer...">
+        <echo msg="Downloading composer..."/>
+        <exec executable="bash" passthru="true" checkreturn="true">
+            <arg value="-c"/>
+            <arg value="curl -sS https://getcomposer.org/installer | php -- --install-dir=${dir.project}"/>
+        </exec>
+    </target>
+    <target name="build:basic:composer:install" description="Install composer...">
+        <echo msg="Copy parameters: ${deploy.parameters} -> parameters.yml ..." />
+        <delete file="${dir.config}/parameters.yml" verbose="true" />
+        <exec command="cp ${deploy.parameters} parameters.yml.dist" dir="${dir.config}" />
+        <echo msg="Composer install..."/>
+        <exec command="php ${dir.project}/composer.phar install --prefer-dist --working-dir=${dir.project}" passthru="true" checkreturn="true"/>
+    </target>
+    <!--  Dev composer  -->
+    <target name="build:basic:composer:dev" description="Run project composer...">
+        <phingcall target="build:basic:composer">
+            <property name="deploy.parameters" value="${deploy.dev.parameters}"/>
+        </phingcall>
+    </target>
+    <!--  Stage composer  -->
+    <target name="build:basic:composer:stage" description="Run project composer...">
+        <phingcall target="build:basic:composer">
+            <property name="deploy.parameters" value="${deploy.stage.parameters}"/>
+        </phingcall>
+    </target>
+    <!--  Release composer  -->
+    <target name="build:basic:composer:release" description="Run project composer...">
+        <phingcall target="build:basic:composer">
+            <property name="deploy.parameters" value="${deploy.release.parameters}"/>
+        </phingcall>
+    </target>
+
+    <!--   Gzip project   -->
+    <target name="deploy:basic:tar" description="Builds tar">
+        <exec command="tar --exclude=.git** -cf ${deploy.file} -C ${dir.project} ." />
+    </target>
+
+    <!--   Creating destination directory   -->
+    <target name="deploy:basic:check" description="Checking destination existance ...">
+        <echo msg="Creating distination directory..."/>
+        <ssh username="${deploy.user}"
+             pubkeyfile="${deploy.pubkeyfile}"
+             privkeyfile="${deploy.privkeyfile}"
+             host="${deploy.host}"
+             port="${deploy.port}"
+             command="mkdir -p ${deploy.tmppath};"/>
+    </target>
+
+    <!--   Copy project archive to destination directory   -->
+    <target name="deploy:basic:scp" description="Scp tar to destination ...">
+        <echo msg="Scp tar to destination ..."/>
+        <exec executable="scp" checkreturn="true">
+            <arg value="${project.basedir}/${deploy.file}"/>
+            <arg value="${deploy.user}@${deploy.host}:${deploy.tmppath}/${deploy.file}"/>
+        </exec >
+    </target>
+
+    <!--   General build   -->
+    <target name="deploy:basic:run" depends="deploy:basic:extract, deploy:basic:rsynk, deploy:basic:cleangarbage, deploy:basic:project" description="General building"/>
+
+    <!--   Extract archive   -->
+    <target name="deploy:basic:extract" description="Extract archive ...">
+        <echo msg="Extracting archive..."/>
+        <ssh username="${deploy.user}"
+             pubkeyfile="${deploy.pubkeyfile}"
+             privkeyfile="${deploy.privkeyfile}"
+             host="${deploy.host}"
+             port="${deploy.port}"
+             command="
+                cd ${deploy.tmppath};
+                tar -xf ${deploy.tmppath}/${deploy.file} ./;
+             "/>
+    </target>
+
+    <!--   Run rsynk   -->
+    <target name="deploy:basic:rsynk" description="Executing rsynk...">
+        <echo msg="Executing rsynk ..."/>
+        <ssh username="${deploy.user}"
+             pubkeyfile="${deploy.pubkeyfile}"
+             privkeyfile="${deploy.privkeyfile}"
+             host="${deploy.host}"
+             port="${deploy.port}"
+             command="sudo rsync -r --exclude-from=${deploy.tmppath}/${deploy.excludefile} --delete ${deploy.tmppath}/ ${deploy.path}/;"/>
+    </target>
+
+    <!--   Clean garbage   -->
+    <target name="deploy:basic:cleangarbage" description="Clean garbage...">
+        <echo msg="Cleaning garbage..."/>
+        <ssh username="${deploy.user}"
+             pubkeyfile="${deploy.pubkeyfile}"
+             privkeyfile="${deploy.privkeyfile}"
+             host="${deploy.host}"
+             port="${deploy.port}"
+             command="rm -rf ${deploy.tmppath};"/>
+    </target>
+
+    <!--  Dev deployment  -->
+    <target name="deploy:dev" description="Dev deployment">
+        <phingcall target="deploy:basic">
+            <property name="deploy.user" value="${deploy.dev.user}"/>
+            <property name="deploy.pubkeyfile" value="${deploy.dev.pubkeyfile}" />
+            <property name="deploy.privkeyfile" value="${deploy.dev.privkeyfile}" />
+            <property name="deploy.host" value="${deploy.dev.host}"/>
+            <property name="deploy.port" value="${deploy.dev.port}"/>
+            <property name="deploy.tmppath" value="${deploy.dev.tmppath}"/>
+            <property name="deploy.path" value="${deploy.dev.path}"/>
+            <property name="project.basedir" value="${project.basedir}"/>
+            <property name="deploy.excludefile" value="${deploy.excludefile}"/>
+            <property name="deploy.file" value="${deploy.file}"/>
+            <property name="deploy.parameters" value="${deploy.dev.parameters}"/>
+        </phingcall>
+    </target>
+
+    <!--   Stage deployment   -->
+    <target name="deploy:stage" description="Stage deployment">
+        <phingcall target="deploy:basic">
+            <property name="deploy.user" value="${deploy.stage.user}"/>
+            <property name="deploy.pubkeyfile" value="${deploy.stage.pubkeyfile}"/>
+            <property name="deploy.privkeyfile" value="${deploy.stage.privkeyfile}"/>
+            <property name="deploy.host" value="${deploy.stage.host}"/>
+            <property name="deploy.port" value="${deploy.stage.port}"/>
+            <property name="deploy.tmppath" value="${deploy.stage.tmppath}"/>
+            <property name="deploy.path" value="${deploy.stage.path}"/>
+            <property name="project.basedir" value="${project.basedir}"/>
+            <property name="deploy.excludefile" value="${deploy.excludefile}"/>
+            <property name="deploy.file" value="${deploy.file}"/>
+            <property name="deploy.parameters" value="${deploy.stage.parameters}"/>
+        </phingcall>
+    </target>
+
+    <!--   Release deployment   -->
+    <target name="deploy:release" description="Release deployment">
+        <phingcall target="deploy:basic">
+            <property name="deploy.user" value="${deploy.release.user}"/>
+            <property name="deploy.pubkeyfile" value="${deploy.release.pubkeyfile}"/>
+            <property name="deploy.privkeyfile" value="${deploy.release.privkeyfile}"/>
+            <property name="deploy.host" value="${deploy.release.host}"/>
+            <property name="deploy.port" value="${deploy.release.port}"/>
+            <property name="deploy.tmppath" value="${deploy.release.tmppath}"/>
+            <property name="deploy.path" value="${deploy.release.path}"/>
+            <property name="project.basedir" value="${project.basedir}"/>
+            <property name="deploy.excludefile" value="${deploy.excludefile}"/>
+            <property name="deploy.file" value="${deploy.file}"/>
+            <property name="deploy.parameters" value="${deploy.release.parameters}"/>
+        </phingcall>
+    </target>
+</project>

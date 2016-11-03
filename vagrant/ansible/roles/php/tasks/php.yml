@@ -1,0 +1,25 @@
+---
+- name: ensure timezone is set in cli php.ini
+  lineinfile: dest=/etc/php/7.0/cli/php.ini
+              regexp='date.timezone ='
+              line='date.timezone = {{ server.timezone }}'
+
+- name: enabling opcache cli
+  lineinfile: dest=/etc/php/7.0/cli/php.ini
+              regexp=';?opcache.enable_cli =\d'
+              line='opcache.enable_cli = 1'
+
+- name: enabling short_open_tag
+  lineinfile: dest=/etc/php/7.0/fpm/php.ini
+              regexp=';?short_open_tag =\d'
+              line='short_open_tag = 1'
+
+- name: optimize Symfony realpath_cache_size
+  lineinfile: dest=/etc/php/7.0/fpm/php.ini
+              regexp=';?realpath_cache_size ='
+              line='realpath_cache_size = 4096k'
+
+- name: optimize Symfony realpath_cache_ttl
+  lineinfile: dest=/etc/php/7.0/fpm/php.ini
+              regexp=';?realpath_cache_ttl ='
+              line='realpath_cache_ttl = 7200'

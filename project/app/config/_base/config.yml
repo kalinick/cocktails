@@ -1,0 +1,65 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: ../parameters.yml }
+    - { resource: security.yml }
+    - { resource: sonata_admin.yml }
+    - { resource: doctrine.yml }
+
+framework:
+    translator:      {fallback: "en"}
+    secret:          "ThisTokenIsNotSoSecretChangeIt"
+    router:
+        resource: "%kernel.root_dir%/config/_base/routing.yml"
+        strict_requirements: ~
+    form:            true
+    csrf_protection: true
+    validation:      {enable_annotations: true}
+    templating:      {engines: ['twig']}
+    translator:      { fallback: %locale% }
+    default_locale:  %locale%
+    trusted_hosts:   ~
+    trusted_proxies: ['127.0.0.1']
+    session:
+        save_path:   "%kernel.sessions_dir%"
+    fragments:       ~
+    http_method_override: true
+    serializer:
+        enabled: true
+    assets: ~
+
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+# Assetic Configuration
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:        [ProjectAppBundle]
+    filters:
+        cssrewrite: ~
+
+# Swiftmailer Configuration
+swiftmailer:
+    default_mailer: default
+    mailers:
+        default:
+            transport: "%mailer_transport%"
+            host:      "%mailer_host%"
+            username:  "%mailer_user%"
+            password:  "%mailer_password%"
+            spool: {type: memory}
+        errors:
+            transport: smtp
+            host:      "localhost"
+            username:  null
+            password:  null
+            spool: {type: memory}
+
+knp_doctrine_behaviors:
+    translatable: true
+
+a2lix_translation_form:
+    locales: "%locales%"
+    required_locales: ["%locale%"]
