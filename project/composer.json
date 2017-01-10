@@ -10,6 +10,7 @@
     "require": {
         "php": ">=7.0",
         "a2lix/translation-form-bundle": "^2.1",
+        "beberlei/DoctrineExtensions": "^1.0",
         "ciklum/doctrine-extra-bundle": "^0.1",
         "ciklum/framework-test-bundle": "^0.1",
         "doctrine/orm": "^2.5",

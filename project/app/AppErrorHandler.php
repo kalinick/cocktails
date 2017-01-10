@@ -2,8 +2,6 @@
 
 /**
  * Class AppErrorHandler
- *
- * @author olsav <olsav@ciklum.com>
  */
 class AppErrorHandler
 {

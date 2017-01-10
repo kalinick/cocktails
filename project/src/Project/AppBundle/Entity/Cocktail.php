@@ -11,7 +11,7 @@ use Project\CoreBundle\Entity\DescriptionInterface;
 use Project\CoreBundle\Entity\TitleInterface;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Project\AppBundle\Repository\CocktailRepository")
  * @ORM\Table(name="cocktail")
  */
 class Cocktail implements IdentifiableInterface, TitleInterface , DescriptionInterface

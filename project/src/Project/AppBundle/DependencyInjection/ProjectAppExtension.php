@@ -8,9 +8,6 @@ use Symfony\Component\DependencyInjection\Loader;
 
 /**
  * Class ProjectAppExtension
- *
- * @package Project\AppBundle\DependencyInjection
- * @author  olsav <olsav@ciklum.com>
  */
 class ProjectAppExtension extends Extension
 {

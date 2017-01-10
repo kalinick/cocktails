@@ -4,14 +4,15 @@ namespace Project\AppBundle\Entity;
 use Ciklum\DoctrineExtraBundle\Entity\IdentifiableInterface;
 use Ciklum\DoctrineExtraBundle\Entity\IdGeneratedTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Project\AppBundle\Repository\CocktailComponentRepository")
  * @ORM\Table(name="cocktail_component")
  */
 class CocktailComponent implements IdentifiableInterface
 {
-    use IdGeneratedTrait;
+    use IdGeneratedTrait, ORMBehaviors\Translatable\Translatable;
 
     /**
      * @ORM\ManyToOne(targetEntity="Cocktail", inversedBy="cocktailComponents")
@@ -28,13 +29,6 @@ class CocktailComponent implements IdentifiableInterface
      * @var Ingredient
      */
     private $ingredient;
-
-    /**
-     * @ORM\Column(type="string", name="portion", nullable=false)
-     *
-     * @var string
-     */
-    private $portion;
 
     /**
      * @return Cocktail
@@ -81,18 +75,6 @@ class CocktailComponent implements IdentifiableInterface
      */
     public function getPortion()
     {
-        return $this->portion;
-    }
-
-    /**
-     * @param string $portion
-     *
-     * @return CocktailComponent
-     */
-    public function setPortion(string $portion): CocktailComponent
-    {
-        $this->portion = $portion;
-
-        return $this;
+        return $this->proxyCurrentLocaleTranslation(__FUNCTION__);
     }
 }

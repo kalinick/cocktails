@@ -2,7 +2,7 @@ services:
     project_app.admin.cocktail_admin:
         class: Project\AppBundle\Admin\CocktailAdmin
         tags:
-            - { name: sonata.admin, manager_type: orm, label: "Cocktails" }
+            - { name: sonata.admin, manager_type: orm, label: "project_app.admin.cocktails" }
         arguments:
             - ~
             - Project\AppBundle\Entity\Cocktail
@@ -11,8 +11,17 @@ services:
     project_app.admin.cocktail_component_admin:
           class: Project\AppBundle\Admin\CocktailComponentAdmin
           tags:
-              - { name: sonata.admin, manager_type: orm, label: "Cocktail Component" }
+              - { name: sonata.admin, manager_type: orm }
           arguments:
               - ~
               - Project\AppBundle\Entity\CocktailComponent
               - SonataAdminBundle:CRUD
+
+    project_app.admin.ingredient_admin:
+        class: Project\AppBundle\Admin\IngredientAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: "project_app.admin.ingredients" }
+        arguments:
+            - ~
+            - Project\AppBundle\Entity\Ingredient
+            - SonataAdminBundle:CRUD

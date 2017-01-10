@@ -17,7 +17,8 @@ class CocktailAdmin extends AbstractAdmin
     public function configureListFields(ListMapper $list)
     {
         $list
-            ->addIdentifier('id');
+            ->addIdentifier('title')
+            ->addIdentifier('description');
     }
 
     /**
@@ -31,8 +32,9 @@ class CocktailAdmin extends AbstractAdmin
             ->end();
 
         $formMapper
-            ->with('Components')
+            ->with('project_app.admin.components')
             ->add('cocktailComponents', 'sonata_type_collection',  [
+                'label' => false,
                 'required' => false,
                 'by_reference' => false,
             ],[

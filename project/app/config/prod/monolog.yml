@@ -18,7 +18,7 @@ monolog:
             type:       swift_mailer
             mailer:     swiftmailer.mailer.errors
             from_email: "%notification.default_sender.email%"
-            to_email:   ["olsav@ciklum.com"]
+            to_email:   ["kalinick@gmail.com"]
             subject:    An Error Occurred!
             level:      critical
         console:

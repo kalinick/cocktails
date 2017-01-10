@@ -11,12 +11,20 @@ use Project\CoreBundle\Entity\TitleInterface;
 
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Project\AppBundle\Repository\IngredientRepository")
  * @ORM\Table(name="ingredient")
  */
 class Ingredient implements IdentifiableInterface, TitleInterface
 {
     use IdGeneratedTrait, ORMBehaviors\Translatable\Translatable;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="IngredientType", inversedBy="ingredients")
+     * @ORM\JoinColumn(name="type_id", referencedColumnName="id", nullable=false)
+     *
+     * @var IngredientType
+     */
+    private $type;
 
     /**
      * @ORM\OneToMany(targetEntity="CocktailComponent", mappedBy="ingredient")
@@ -39,6 +47,26 @@ class Ingredient implements IdentifiableInterface, TitleInterface
     public function getTitle()
     {
         return $this->proxyCurrentLocaleTranslation(__FUNCTION__);
+    }
+
+    /**
+     * @return IngredientType
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param IngredientType $type
+     *
+     * @return Ingredient
+     */
+    public function setType(IngredientType $type): Ingredient
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
     /**

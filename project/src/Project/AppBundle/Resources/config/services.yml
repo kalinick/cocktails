@@ -2,3 +2,12 @@ imports:
     - { resource: admin.yml }
 
 services:
+    project_app.service.cocktail_finder:
+        class: Project\AppBundle\Service\CocktailFinderService
+        calls:
+            - [setDoctrine, ["@doctrine"]]
+
+    project_app.service.ingredient:
+        class: Project\AppBundle\Service\IngredientService
+        calls:
+            - [setDoctrine, ["@doctrine"]]

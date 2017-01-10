@@ -11,33 +11,33 @@ use Project\CoreBundle\Entity\TitleInterface;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="cocktail_type")
+ * @ORM\Table(name="ingredient_type")
  */
-class CocktailType implements IdentifiableInterface, TitleInterface
+class IngredientType implements IdentifiableInterface, TitleInterface
 {
     use IdDirectoryDataTrait, ORMBehaviors\Translatable\Translatable;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cocktail", mappedBy="type")
+     * @ORM\OneToMany(targetEntity="Ingredient", mappedBy="type")
      *
-     * @var Collection|Cocktail[]
+     * @var Collection|Ingredient[]
      */
-    private $cocktails;
+    private $ingredients;
 
     /**
      * CocktailType constructor.
      */
     public function __construct()
     {
-        $this->cocktails = new ArrayCollection();
+        $this->ingredients = new ArrayCollection();
     }
 
     /**
-     * @return Collection|Cocktail[]
+     * @return Collection|Ingredient[]
      */
-    public function getCocktails()
+    public function getIngredients()
     {
-        return $this->cocktails;
+        return $this->ingredients;
     }
 
     /**

@@ -1,5 +1,60 @@
 {% extends '::base.html.twig' %}
 
+{% block includes %}
+    {{ parent() }}
+    {% stylesheets filter='cssrewrite'
+    'bundles/projectapp/css/sumoselect.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="all" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block bottom_scripts %}
+    {{ parent() }}
+    {% javascripts
+    'bundles/projectapp/js/jquery.sumoselect.min.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.ingredients').SumoSelect({search: true, searchText:'Enter here.'});
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
-    Page content
+    <a href="{{ url('sonata_admin_dashboard') }}">{{ 'Dashboard'|trans({}, 'SonataAdminBundle') }}</a>
+
+    <br><br><br><br><br>
+
+    <form method="get">
+        <label>
+            <select class="ingredients" multiple="multiple" name="ingredients[]">
+                {% for group in ingredients %}
+                <optgroup label="{{ group.0.type.title }}">
+                    {% for ingredient in group %}
+                    <option {% if ingredient.id in selectedIngredients%}selected="selected"{% endif %} value="{{ ingredient.id }}">{{ ingredient.title }}</option>
+                    {% endfor %}
+                </optgroup>
+                {% endfor %}
+            </select>
+        </label>
+        <input type="submit"/>
+    </form>
+
+    <br><br><br><br><br>
+
+    {% for cocktail in cocktails %}
+        <div>{{ cocktail.title }}, {{ cocktail.description }}</div>
+        <ul>
+        {% for component in cocktail.cocktailComponents %}
+            <li>
+                {{ component.ingredient.title }}, {{ component.portion }}
+            </li>
+        {% endfor %}
+        </ul>
+        <br><br><br><br><br>
+    {% endfor %}
 {% endblock content %}
