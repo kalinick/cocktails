@@ -1,7 +1,11 @@
 <?php
 namespace Project\AppBundle\Controller;
 
-use Project\AppBundle\Entity\Cocktail;
+use Project\AppBundle\DataControl\DCIngredients;
+use Project\AppBundle\Entity\CocktailComponent;
+use Project\AppBundle\Entity\Ingredient;
+use Project\CoreBundle\DataControl\Base\DCContainer;
+use Project\CoreBundle\DataControl\Paginator\HtmlPaginator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +22,17 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $dcContainer = (new DCContainer())
+            ->add(new DCIngredients($this->getDoctrine()->getRepository(Ingredient::class)->findAllOrdered()))
+            ->bindRequest($request);
+
+        $total = $this->getDoctrine()->getRepository(CocktailComponent::class)->countCocktails($dcContainer);
+        $dcContainer->add((new HtmlPaginator($total))
+            ->bindRequest($request));
+
         return $this->render('ProjectAppBundle:Default:index.html.twig', [
-            'selectedIngredients' => $request->get('ingredients'),
-            'ingredients' => $this->get('project_app.service.ingredient')->getAllGroupedByType(),
-            'cocktails' => $this->get('project_app.service.cocktail_finder')->find($request->get('ingredients'))
+            'dcContainer' => $dcContainer,
+            'cocktails' => $this->get('project_app.service.cocktail_finder')->find($dcContainer)
         ]);
     }
 }

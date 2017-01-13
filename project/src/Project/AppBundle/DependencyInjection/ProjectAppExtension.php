@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
- * Class ProjectAppExtension
+ * ProjectAppExtension
  */
 class ProjectAppExtension extends Extension
 {

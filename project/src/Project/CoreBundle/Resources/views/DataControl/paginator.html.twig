@@ -1,0 +1,31 @@
+{% set countPages = dc.countPages %}
+{% if countPages > 1 %}
+    <ul class="pages">
+        {% if (dc.firstPage != dc.page) %}
+            <li class="previous"><a href="{{ dc.url(app.request, dc.page - 1) }}" class="arrow arrow-left"></a></li>
+        {% endif %}
+
+        {% if dc.minPage > dc.firstPage %}
+            <li><a href="{{ dc.url(app.request, dc.firstPage) }}">{{ dc.firstPage }}</a></li>
+            <li><span>...</span></li>
+        {% endif %}
+
+        {% for i in dc.minPage..dc.maxPage %}
+            <li>
+                {% if dc.page == i %}
+                    <span class="active" >{{ i }}</span>
+                {% else %}
+                    <a href="{{ dc.url(app.request, i) }}">{{ i }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+
+        {% if dc.maxPage < countPages %}
+            <li><span>...</span></li>
+            <li><a href="{{ dc.url(app.request, countPages) }}">{{ countPages }}</a></li>
+        {% endif %}
+        {% if countPages != dc.page %}
+            <li class="next"><a href="{{ dc.url(app.request, dc.page + 1) }}" class="arrow arrow-right"></a></li>
+        {% endif %}
+    </ul>
+{% endif %}

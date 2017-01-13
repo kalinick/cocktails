@@ -32,6 +32,7 @@ class AppKernel extends Kernel
 
             // Project
             new Project\AppBundle\ProjectAppBundle(),
+            new Project\CoreBundle\ProjectCoreBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'])) {

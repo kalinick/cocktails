@@ -30,21 +30,11 @@
     <br><br><br><br><br>
 
     <form method="get">
-        <label>
-            <select class="ingredients" multiple="multiple" name="ingredients[]">
-                {% for group in ingredients %}
-                <optgroup label="{{ group.0.type.title }}">
-                    {% for ingredient in group %}
-                    <option {% if ingredient.id in selectedIngredients%}selected="selected"{% endif %} value="{{ ingredient.id }}">{{ ingredient.title }}</option>
-                    {% endfor %}
-                </optgroup>
-                {% endfor %}
-            </select>
-        </label>
+        {% set ingredients = dcContainer.get('ingredients') %}
+        {% include ingredients.template with { dc: ingredients } %}
         <input type="submit"/>
     </form>
 
-    <br><br><br><br><br>
 
     {% for cocktail in cocktails %}
         <div>{{ cocktail.title }}, {{ cocktail.description }}</div>
@@ -55,6 +45,9 @@
             </li>
         {% endfor %}
         </ul>
-        <br><br><br><br><br>
+        <br><br>
     {% endfor %}
+
+    {% set paginator = dcContainer.get('paginator') %}
+    {% include paginator.template with { dc: paginator } %}
 {% endblock content %}

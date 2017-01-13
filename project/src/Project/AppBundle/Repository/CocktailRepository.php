@@ -3,23 +3,24 @@ namespace Project\AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Project\AppBundle\Entity\Cocktail;
+use Project\CoreBundle\DataControl\Behaiviour\ModifyQueryBuilderInterface;
 
 /**
- * Class CocktailRepository
+ * CocktailRepository
  */
 class CocktailRepository extends EntityRepository
 {
     /**
-     * @param $page
+     * @param ModifyQueryBuilderInterface $dc
      *
      * @return Cocktail[]
      */
-    public function findAllWithLimit($page)
+    public function findByDC(ModifyQueryBuilderInterface $dc): array
     {
-        return $this
-            ->createQueryBuilder('c')
-            ->setFirstResult($page * 10)
-            ->setMaxResults(10)
+        $qb = $this->createQueryBuilder('c');
+        $dc->modifyQueryBuilder($qb);
+
+        return $qb
             ->getQuery()
             ->getResult();
     }

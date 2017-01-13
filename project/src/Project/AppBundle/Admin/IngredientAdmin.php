@@ -7,7 +7,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
 /**
- * Class IngredientAdmin
+ * IngredientAdmin
  */
 class IngredientAdmin extends AbstractAdmin
 {

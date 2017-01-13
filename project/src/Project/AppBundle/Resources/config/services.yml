@@ -6,8 +6,3 @@ services:
         class: Project\AppBundle\Service\CocktailFinderService
         calls:
             - [setDoctrine, ["@doctrine"]]
-
-    project_app.service.ingredient:
-        class: Project\AppBundle\Service\IngredientService
-        calls:
-            - [setDoctrine, ["@doctrine"]]

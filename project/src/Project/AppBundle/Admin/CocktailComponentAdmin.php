@@ -6,7 +6,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Form\FormMapper;
 
 /**
- * Class CocktailComponentAdmin
+ * CocktailComponentAdmin
  */
 class CocktailComponentAdmin extends AbstractAdmin
 {

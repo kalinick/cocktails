@@ -5,7 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Project\AppBundle\Entity\Ingredient;
 
 /**
- * Class IngredientRepository
+ * IngredientRepository
  */
 class IngredientRepository extends EntityRepository
 {

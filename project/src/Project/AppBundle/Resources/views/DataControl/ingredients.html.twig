@@ -1,0 +1,11 @@
+<label>
+    <select class="ingredients" multiple="multiple" name="ingredients[]">
+        {% for group in dc.grouped %}
+            <optgroup label="{{ group.0.type.title }}">
+                {% for ingredient in group %}
+                    <option {% if ingredient.id in dc.collection %}selected="selected"{% endif %} value="{{ ingredient.id }}">{{ ingredient.title }}</option>
+                {% endfor %}
+            </optgroup>
+        {% endfor %}
+    </select>
+</label>
