@@ -1,12 +1,12 @@
 <?php
 namespace Project\AppBundle\Entity;
 
-use Ciklum\DoctrineExtraBundle\Entity\IdDirectoryDataTrait;
-use Ciklum\DoctrineExtraBundle\Entity\IdentifiableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use PhpSolution\Doctrine\Entity\IdDirectoryDataTrait;
+use PhpSolution\Doctrine\Entity\IdentifiableInterface;
 use Project\CoreBundle\Entity\TitleInterface;
 
 /**

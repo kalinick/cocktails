@@ -1,10 +1,10 @@
 <?php
 namespace Project\AppBundle\Entity;
 
-use Ciklum\DoctrineExtraBundle\Entity\IdentifiableInterface;
-use Ciklum\DoctrineExtraBundle\Entity\IdGeneratedTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use PhpSolution\Doctrine\Entity\IdentifiableInterface;
+use PhpSolution\Doctrine\Entity\IdGeneratedTrait;
 
 /**
  * @ORM\Entity(repositoryClass="Project\AppBundle\Repository\CocktailComponentRepository")
